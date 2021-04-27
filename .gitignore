@@ -1,4 +1,4 @@
 input/RAD_data/*
 input/RAD_alignments/*
 scripts/slurm/*
-
+analysis/slurm/*
