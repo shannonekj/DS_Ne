@@ -22,7 +22,7 @@ pop="DS_Ne"
 ###  DO THINGS  ###
 ###################
 cd ${pca_dir}
-echo "SPECIES-INDEX-WELL_WELL_BIRTHYEAR_SPECIES-INDEX" | awk -F_ '{print $1"\t"$2"\t"$3"\t"$4}' > ${pop}.clst
+echo "SPECIES-INDEX-WELL_WELL_BIRTHYEAR_SPECIES-INDEX_PREFIX" | awk -F_ '{print $1"\t"$2"\t"$3"\t"$4"\t"$5}' > ${pop}.clst
 x=1
 n=$(wc -l $bamlist | awk '{print $1}')
 while [ $x -le $n ]
@@ -31,10 +31,11 @@ do
     file=$(sed -n "${x}p" ${bamlist})
     filename=$(echo $file | rev | cut -f1 -d/ | rev)
     prefix=$(basename $filename .sort-n.fixmate-m.sort.markdup-r.bam)
-    echo $prefix | sed 's:\-:_:g' | awk -F_ '{print $1"_"$4"\t"$4"\t"$3"\t"$1}' >> ${pop}.clst
+    echo $prefix | sed 's:\-:_:g' | awk -F_ '{print $1"_"$4"\t"$4"\t"$3"\t"$1"\t"$1"-"$2"_"$3"_"$4}' >> ${pop}.clst
         # $1 = species_index# (e.g. Ht01_A02)
         # $2 = well (e.g. A02)
         # $3 = birth year (e.g. 2002)
         # $4 = species & index # (e.g. Ht01)
+        # $5 = prefix to file name (e.g. Ht01-09_1998_A02)
     x=$(( $x + 1 ))
 done
