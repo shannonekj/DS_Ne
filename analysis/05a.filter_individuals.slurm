@@ -7,6 +7,12 @@
 #SBATCH --mem=2G
 #SBATCH -p med
 
+# NOTE ran this manually... found that the most recent year bam files have a different naming structure (see below)
+##  old name: Ht01-12-1999-A03
+##  new name: Ht01_12-1999-A03
+### go rename the new ones (otherwise have to do a bunch of crap in the clst etc etc)
+
+
 ###############
 ###  SETUP  ###
 ###############
@@ -24,8 +30,6 @@ doc_dir="${git_dir}/docs"
 bamlist="${pca_dir}/DS_Ne.no0000.bamlist"
 hyblist="${doc_dir}/hybrids.list"
 nohybfile="${pop}.no0000.noHybs.bamlist"
-# independent
-pop="DS_Ne"
 
 
 ###################
@@ -39,9 +43,9 @@ while [ $x -le $n ]
 do
     echo "Processing line $x/$n"
     line=$(sed -n ${x}p ${hyblist})
+    echo $line
+    grep $line ${nohybfile}
     sed -i "/${line}/d" ${nohybfile}
     x=$(( $x + 1 ))
 done
-
-
 
