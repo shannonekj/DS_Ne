@@ -12,11 +12,10 @@ set -x # trace of all commands after expansion before execution
 
 # define things
 ## directories
+git_proj_dir="/group/millermrgrp2/shannon/projects/DS_Ne"
 data_dir="/group/millermrgrp2/shannon/raw_data/DS_Ne"
-git_dir="/group/millermrgrp2/shannon/projects/DS_Ne/input/RAD_data"
-meta_dir="/group/millermrgrp2/shannon/projects/DS_Ne/docs/metadata"
-#OLD#data_dir="/home/sejoslin/projects/DS_history/data"
-#OLD#meta_dir="/home/sejoslin/projects/DS_history/data/metadata"
+git_dir="${git_proj_dir}/input/RAD_data"
+meta_dir="${git_proj_dir}/docs/metadata"
 dir="BMAG067"
 index_list=("ATCACG" "CGATGT" "TTAGGC" "TGACCA")
 [ -d ${git_dir} ] || mkdir -p ${git_dir}
