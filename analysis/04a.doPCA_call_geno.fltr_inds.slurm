@@ -31,7 +31,7 @@ echo "Assigning variables"
 prefix="DS_Ne"
 ## directories
 rad_dir="/group/millermrgrp2/shannon/projects/DS_Ne/input/RAD_alignments"
-pca_dir="/group/millermrgrp2/shannon/projects/DS_Ne/input/RAD_PCA"
+pca_dir="/group/millermrgrp2/shannon/projects/DS_Ne/output/RAD_PCA"
 ## files
 ref_gen="/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/03-assemblies/sandbox_ipa_F/Hyp_tra_F_combined_chromonomer/output/CHRR_integrated.fa"
 
@@ -57,14 +57,14 @@ cat << EOT >> ${pca_dir}/README
 This directory contains ANGSD output for carrying out PCAs. 
 All BAM files were aligned to the following reference genome : ${ref_gen}
 
-Output Files:
-    *.arg == list of commands
-    *.covMat == covariance matrix (n_ind x n_ind matrix)
-    *.ibs.gz == pairwise differences (if [-output 1]; then 1, 0, -1 denote which sampled base [major, minor, missing respectively] in individual)
-    * mafs.gz == major/minor allele frequency
-
-Prefixes:
-    DS_Ne_Ne_pca.1993to2019.noMinMAF == ALL individuals with recorded birth years. No filtration
-        -uses PCA_MDS method of sampling of single read at each site
+echo "[$(date +%D' '%T)]"
+    Output Files:
+        *.arg == list of commands
+        *.covMat == covariance matrix (n_ind x n_ind matrix)
+        *.ibs.gz == pairwise differences (if [-output 1]; then 1, 0, -1 denote which sampled base [major, minor, missing respectively] in individual)
+        * mafs.gz == major/minor allele frequency
+    Prefixes:
+        DS_Ne_Ne_pca.1993to2019.noMinMAF == ALL individuals with recorded birth years. No filtration
+            -uses PCA_MDS method of sampling of single read at each site
 EOT
 
