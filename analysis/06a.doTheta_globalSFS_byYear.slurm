@@ -36,6 +36,7 @@ echo "    Done."
 cd ${tht_dir}
 
 # make bamlists
+echo "$(date +%D' '%T) : Making bamlists"
 ## symlink to master bamlist = ALL YEARS
 [ -L ${bamlist} ] || ln -s ${doc_dir}/${bamlist} ${bamlist}
 # make a list with all lines' years (n=2945), AND make a bamlist for each year (n=variable_for_each_year)
@@ -49,17 +50,21 @@ do
     echo ${bam_dir}/${file} >> BY${year}.bamlist
     x=$(( $x + 1 ))
 done
+echo "    Done."
 
 # shrink all lines' year list to just unique entries (n=24) 
+echo "$(date +%D' '%T) : Making list of birth years (year.list)"
 sort -u all.year.list > year.list
 rm all.year.list
+echo "    Done."
 
 # make theta script for each year
+echo "$(date +%D' '%T) : Making scripts to find theta for each year"
 x=1
 n=$(wc -l year.list | awk '{print $1}')
 while [ $x -le $n ]
 do
-    year=$(sed -n ${x}p)
+    year=$(sed -n ${x}p year.list)
     mkdir -p BY_${year}
     mv BY${year}.bamlist BY_${year}/.
 cat << EOT >> BY_${year}/BY${year}_getTheta.sh
@@ -67,10 +72,10 @@ cat << EOT >> BY_${year}/BY${year}_getTheta.sh
 #SBATCH -J tht${year}
 #SBATCH -e BY${year}_getTheta.j\%j.err
 #SBATCH -o BY${year}_getTheta.j\%j.out
-#SBATCH --ntasks=20
-#SBATCH -p bigmemm
-#SBATCH --time=2-00:00:00
-#SBATCH --mem=480G
+#SBATCH --ntasks=12
+#SBATCH -p med
+#SBATCH --time=2-04:06:08
+#SBATCH --mem=36Gb
 
 ###############
 ###  SETUP  ###
@@ -100,6 +105,7 @@ out_dir="\${tht_dir}/BY_\${year}"
 ## files
 ref="\${git_dir}/input/\${ref_prefix}.fa"
 bamlist="BY\${year}.bamlist"
+random20_bamlist="BY\${year}.random20.bamlist"
 echo "    Done!"
 
 
@@ -109,7 +115,7 @@ echo "    Done!"
 # setup files
 ## download plot script
 echo "\$(date +%D' '%T) : Checking for plotSFS.R scripts"
-[ -f \${code_dir}/plotSFS.R ] || cd \${code_dir}; wget -O plotSFS.R https://raw.githubusercontent.com/shannonekj/ngs_scripts/master/plotSFS.R; chmod a+x plotSFS.R
+[ -f \${code_dir}/plotSFS.R ] || wget -O \${code_dir}/plotSFS.R https://raw.githubusercontent.com/shannonekj/ngs_scripts/master/plotSFS.R; chmod a+x \${code_dir}/plotSFS.R
 echo "    Done."
 
 ## index reference genome
@@ -127,12 +133,15 @@ sed -i 's/$/:/' \${ref_prefix}.chrlist
 sort \${ref_prefix}.chrlist > \${ref_prefix}.loci
 echo "    Done."
 
+# make bamlist of random 20 individuals from BY cohort
+shuf -n 20 \${bamlist} > \${random20_bamlist} 
+
 # get SFS & thetas
 module load angsd
 for i in \$(seq 1 2)
 do
     echo "\$(date +%D' '%T) : GL\${i} -- Getting site allele frequencies with -doSaf 1"
-    angsd -bam \${bamlist} -out \${prefix}_GL\${i} -ref \${ref} -anc \${ref} -rf \${ref_prefix}.loci -GL \${i} -doSaf 1 -minMapQ 10 -minQ 20 -nThreads \${threads}
+    angsd -bam \${random20_bamlist} -out \${prefix}_GL\${i} -ref \${ref} -anc \${ref} -rf \${ref_prefix}.loci -GL \${i} -doSaf 1 -minMapQ 10 -minQ 20 -nThreads \${threads}
     echo "\$(date +%D' '%T) : GL\${i} -- Generating site frequency spectrum"
     realSFS \${prefix}_GL\${i}.saf.idx -maxIter 100 -P \${threads} -fold 1 > \${prefix}_GL\${i}.folded.sfs
     realSFS \${prefix}_GL\${i}.saf.idx -maxIter 100 -P \${threads} > \${prefix}_GL\${i}.unfolded.sfs
@@ -147,7 +156,21 @@ do
     thetaStat print \${prefix}_GL\${i}.thetas.idx 2>\${prefix}_GL\${i}.thetas.readable.idx | gzip > \${prefix}_GL\${i}.thetas.readable.gz
     echo "\$(date +%D' '%T) : GL\${i} -- Estimating thetas"
     thetaStat do_stat \${prefix}_GL\${i}.thetas.idx
+    sstat --format 'JobID,MaxRSS,AveCPU' -P \${SLURM_JOB_ID}.batch
 done
 EOT
+    x=$(( $x + 1 ))
+done
+echo "$(date +%D' '%T) : Creation of files complete!"
 
+echo "$(date +%D' '%T) : Submitting to slurm"
+for i in BY_????/
+do
+    cd $i
+    sbatch *.sh
+    cd ../
+done
+
+sstat --format 'JobID,MaxRSS,AveCPU' -P ${SLURM_JOB_ID}.batch
+exit
  
