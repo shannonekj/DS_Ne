@@ -14,3 +14,5 @@
     - `x=1; n=$(wc -l DS_Ne.no0000.noHybs.bamlist | awk '{print $1}'); while [ $x -le $n ]; do line=$(sed -n ${x}p DS_Ne.no0000.noHybs.bamlist); year=$(echo $line | cut -f 2 -d_); echo $year >> years_all.list; x=$(( $x + 1)); done`
 * `year_counts.list` = count of number of individual in each year (FMT: [ BIRTH_YEAR | N_INDIVIDUALS ])
     - cmd `sort -n years_all.list | uniq -c >> year_counts.list`
+* `year.list` = list of every year
+    _ cmd `sort -nk1 years_all.list | uniq >> year.list`
