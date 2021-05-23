@@ -153,6 +153,11 @@ angsd -out \${prefix} \
 -SNP_pval 1e-6 \
 -nThreads \${threads}
 echo "    Done."
+
+# make genepop file
+echo "\$(date +%D' '%T) : Unzipping \${prefix}.geno
+gunzip \${prefix}.geno.gz
+echo "    Done."
 echo "\$(date +%D' '%T) : Now onto converting geno files to GENEPOP format"
 perl \${script_dir}/PopGenTools_3.00.pl GENEPOP \
 -g \${prefix}.geno \
