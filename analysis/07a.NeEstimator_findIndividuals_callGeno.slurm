@@ -162,7 +162,7 @@ echo "\$(date +%D' '%T) : Now onto converting geno files to GENEPOP format"
 perl \${script_dir}/PopGenTools_3.00.pl GENEPOP \
 -g \${prefix}.geno \
 -n \${nInd} \
--o \${prefix}.genepop
+-o \${prefix}.unformatted.genepop
 EOT
 
 sbatch all_call_genotypes.slurm
