@@ -38,7 +38,7 @@ echo "$(date +%D' '%T) : Assigning variables..."
 git_dir="/group/millermrgrp2/shannon/projects/DS_Ne"
 doc_dir="${git_dir}/docs"
 ne_dir="${git_dir}/output/popgen_NeEstimator"
-out_dir="${ne_dir}/input_files"
+out_dir="${ne_dir}/genepop_files"
 
 ## files
 bamlist="${ne_dir}/BYall/all_top50_for_each_year.bamlist"
