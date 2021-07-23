@@ -90,17 +90,12 @@ do
     sstat --format 'JobID,MaxRSS,AveCPU' -P \${SLURM_JOB_ID}.batch
 done
 EOT
+    cd BY_${year}
+    sbatch BY${year}_getTheta_win1_stp1.sh
+    cd ../
     x=$(( $x + 1 ))
 done
-echo "$(date +%D' '%T) : Creation of files complete!"
-
-echo "$(date +%D' '%T) : Submitting to slurm"
-for i in BY_????/
-do
-    cd $i
-    sbatch *.sh
-    cd ../
-done
+echo "$(date +%D' '%T) : Creation of files & submission to slurm complete!"
 
 sstat --format 'JobID,MaxRSS,AveCPU' -P ${SLURM_JOB_ID}.batch
 exit
